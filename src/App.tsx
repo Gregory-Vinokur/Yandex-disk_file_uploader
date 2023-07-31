@@ -1,7 +1,7 @@
-import styles from './App.module.css';
+import Uploader from './components/Uploader/Uploader';
 
 function App() {
-  return <div className={styles.app}>My app</div>;
+  return <Uploader />;
 }
 
 export default App;
