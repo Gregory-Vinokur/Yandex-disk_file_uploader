@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import styles from './Uploader.module.css';
 import { MdCloudUpload, MdDelete } from 'react-icons/md';
 import { AiFillFileImage } from 'react-icons/ai';
+import GetAccess from '../GetAccess/GetAccess';
+import { uploadFilesToYandexDisk } from './../../helpers/uploadFilesToYandexDisk';
 
 const Uploader = () => {
   const [files, setFiles] = useState<File[]>([]);
@@ -45,14 +47,12 @@ const Uploader = () => {
       const updatedFiles: File[] = [...Array.from(files), ...dropFiles];
       setFiles(updatedFiles);
     }
-    // const formData = new FormData();
-    // formData.append('file', files[0]);
-    // console.log(files);
     setDrag(false);
   };
 
   return (
     <main>
+      <GetAccess />
       <form
         className={styles.form}
         onClick={() => fileInputRef.current?.click()}
@@ -74,7 +74,7 @@ const Uploader = () => {
         ) : (
           <>
             <MdCloudUpload color="#1475cf" size={60} />
-            <p>Выберите файлы для загрузки:</p>
+            <p>Выберите или перетащите файлы для загрузки:</p>
           </>
         )}
       </form>
@@ -93,6 +93,11 @@ const Uploader = () => {
             </div>
           ))}
       </section>
+      <button
+        onClick={() => uploadFilesToYandexDisk(files).then(() => setFiles([]))}
+      >
+        Загрузить файлы на Яндекс диск
+      </button>
     </main>
   );
 };
