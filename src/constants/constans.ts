@@ -1,5 +1,3 @@
-export enum CONSTANTS {
-  CLIENT_ID = '21d57bae2f654229abf8bee0e6eb19ac',
-  REDIRECT_URI = 'http://localhost:5173',
-  BASE_PATH = '/'
-}
+const env = typeof process !== 'undefined' ? process.env : import.meta.env
+
+export const { VITE_CLIENT_ID: CLIENT_ID, VITE_REDIRECT_URI: REDIRECT_URI, VITE_BASE_PATH: BASE_PATH } = env

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { CONSTANTS } from '../../constants/constans';
+import { BASE_PATH, CLIENT_ID, REDIRECT_URI } from '../../constants/constans';
 
 const GetAccess = () => {
   const isLoggedIn = localStorage.getItem('ya_token');
   const login = () => {
-    const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=token&client_id=${CONSTANTS.CLIENT_ID}&redirect_uri=${CONSTANTS.REDIRECT_URI}${CONSTANTS.BASE_PATH}`;
+    const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=token&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}${BASE_PATH}`;
     window.location.href = yandexAuthUrl;
   };
 
@@ -13,7 +13,8 @@ const GetAccess = () => {
 
     if (params.get('access_token')) {
       localStorage.setItem('ya_token', params.get('access_token') as string);
-      window.location.href = CONSTANTS.BASE_PATH;
+      const basePath = BASE_PATH !== undefined ? BASE_PATH : '';
+      window.location.href = basePath;
     }
   }, []);
 
