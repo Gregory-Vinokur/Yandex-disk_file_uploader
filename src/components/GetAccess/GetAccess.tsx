@@ -18,7 +18,7 @@ const GetAccess = () => {
   }, []);
 
   return (
-    <button onClick={login}>
+    <button onClick={login} disabled={Boolean(isLoggedIn)}>
       {isLoggedIn ? 'Доступ получен' : 'Получить доступ к Яндекс диску'}
     </button>
   );

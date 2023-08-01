@@ -1,15 +1,16 @@
 import { useRef, useState } from 'react';
 import styles from './Uploader.module.css';
 import { MdCloudUpload, MdDelete } from 'react-icons/md';
-import { AiFillFileImage } from 'react-icons/ai';
+import { AiFillFileImage, AiOutlineCheck } from 'react-icons/ai';
 import GetAccess from '../GetAccess/GetAccess';
-import { uploadFilesToYandexDisk } from './../../helpers/uploadFilesToYandexDisk';
+import { useUpload } from '../../hooks/useUpload';
 
 const Uploader = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [drag, setDrag] = useState(false);
   const [filesCount, setFilesCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadFilesToYandexDisk, progress, fileUniqueIds } = useUpload(files);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -92,19 +93,28 @@ const Uploader = () => {
               <AiFillFileImage color="#1475cf" />
               <span className={styles.upload__content}>{file.name}</span>
               <MdDelete onClick={() => removeFile(index)} />
+              {progress[fileUniqueIds[file.name]] < 100 && (
+                <p>{progress[fileUniqueIds[file.name]]}%</p>
+              )}
+              {progress[fileUniqueIds[file.name]] === 100 && (
+                <AiOutlineCheck color="rgb(39 193 23)" size={20} />
+              )}
             </div>
           ))}
       </section>
-      {files.length > 100 && <span>Нельзя загрузить больше 100 файлов!</span>}
+      {files.length + filesCount > 100 && (
+        <span>Нельзя загрузить больше 100 файлов!</span>
+      )}
       {filesCount >= 100 && <span>Достигнут лимит загрузки файлов!</span>}
       {filesCount < 100 && (
         <button
           onClick={() =>
-            uploadFilesToYandexDisk(files).then(() => {
-              setFilesCount(files.length);
+            uploadFilesToYandexDisk().then(() => {
+              setFilesCount((prev) => prev + files.length);
               setFiles([]);
             })
           }
+          disabled={Boolean(files.length === 0)}
         >
           Загрузить файлы на Яндекс диск
         </button>
