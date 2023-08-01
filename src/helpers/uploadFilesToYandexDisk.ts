@@ -3,7 +3,7 @@ import axios from "axios";
 const getUrlForUpload = 'https://cloud-api.yandex.net/v1/disk/resources/upload';
 
 export const uploadFilesToYandexDisk = async (files: File[]) => {
-  const accessToken = localStorage.getItem('token');
+  const accessToken = localStorage.getItem('ya_token');
   const getUrlForSingleFile = async (file: File) => {
     try {
       const response = await axios.get(getUrlForUpload, {

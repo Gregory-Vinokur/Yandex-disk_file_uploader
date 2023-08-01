@@ -8,6 +8,7 @@ import { uploadFilesToYandexDisk } from './../../helpers/uploadFilesToYandexDisk
 const Uploader = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [drag, setDrag] = useState(false);
+  const [filesCount, setFilesCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,6 +80,7 @@ const Uploader = () => {
         )}
       </form>
       <p className={styles.files__count}>Файлов выбрано: {files.length}/100</p>
+      <p className={styles.files__count}>Файлов загружено: {filesCount}/100</p>
       <section className={styles.uploaded__row}>
         {!files.length && (
           <span className={styles.upload__content}>Файлы не выбраны</span>
@@ -93,11 +95,20 @@ const Uploader = () => {
             </div>
           ))}
       </section>
-      <button
-        onClick={() => uploadFilesToYandexDisk(files).then(() => setFiles([]))}
-      >
-        Загрузить файлы на Яндекс диск
-      </button>
+      {files.length > 100 && <span>Нельзя загрузить больше 100 файлов!</span>}
+      {filesCount >= 100 && <span>Достигнут лимит загрузки файлов!</span>}
+      {filesCount < 100 && (
+        <button
+          onClick={() =>
+            uploadFilesToYandexDisk(files).then(() => {
+              setFilesCount(files.length);
+              setFiles([]);
+            })
+          }
+        >
+          Загрузить файлы на Яндекс диск
+        </button>
+      )}
     </main>
   );
 };
