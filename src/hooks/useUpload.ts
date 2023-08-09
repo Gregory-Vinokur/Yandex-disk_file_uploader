@@ -48,14 +48,32 @@ export const useUpload = (files: File[]) => {
       }
     };
 
-
-
     try {
-      for (const file of files) {
-        const uploadUrl = await getUrlForSingleFile(file);
-        const fileUniqueId = nanoid();
-        fileUniqueIdsRef.current[file.name] = fileUniqueId;
-        await uploadSingleFile(file, uploadUrl, fileUniqueId);
+      // Максимальное количество одновременных загрузок в пачке
+      const MAX_CONCURRENT_UPLOADS = 5;
+
+      // Цикл по файлам для загрузки
+      for (let i = 0; i < files.length; i += MAX_CONCURRENT_UPLOADS) {
+        // Выбираем файлы для текущей пачки не более MAX_CONCURRENT_UPLOADS
+        const batchFiles = files.slice(i, i + MAX_CONCURRENT_UPLOADS);
+
+        // Создаем массив задач (промисов) для загрузки каждого файла в пачке
+        const batchUploads = batchFiles.map(async (file) => {
+          // Получаем URL для загрузки текущего файла
+          const uploadUrl = await getUrlForSingleFile(file);
+
+          // Создаем уникальный идентификатор для файла
+          const fileUniqueId = nanoid();
+
+          // Записываем уникальный идентификатор файла в объект fileUniqueIdsRef
+          fileUniqueIdsRef.current[file.name] = fileUniqueId;
+
+          // Загружаем текущий файл на сервер с использованием полученных данных
+          return uploadSingleFile(file, uploadUrl, fileUniqueId);
+        });
+
+        // Ожидаем завершения всех задач загрузки в текущей пачке перед переходом к следующей пачке
+        await Promise.all(batchUploads);
       }
     } catch (error) {
       console.error('Error uploading files:', (error as Error).message);
